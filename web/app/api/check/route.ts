@@ -17,9 +17,8 @@ export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS });
 }
 
-// Free model on Groq (no credit card). If this name ever errors,
-// swap it for "llama-3.1-8b-instant".
-const MODEL = "llama-3.3-70b-versatile";
+// Free model on Groq (no credit card). Swap to "openai/gpt-oss-20b" if you want it faster.
+const MODEL = "openai/gpt-oss-120b";
 
 // ============================================================
 // SLOT: PERSON A (THE BRAIN)
