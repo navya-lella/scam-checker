@@ -17,9 +17,9 @@ export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS });
 }
 
-// Free model from Google AI Studio (no credit card needed).
-// If this name ever 404s, swap it for "gemini-1.5-flash".
-const MODEL = "gemini-2.0-flash";
+// Free model on Groq (no credit card). If this name ever errors,
+// swap it for "llama-3.1-8b-instant".
+const MODEL = "llama-3.3-70b-versatile";
 
 // ============================================================
 // SLOT: PERSON A (THE BRAIN)
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   }
 
   // No key yet? Hand back the mock so the rest of the team keeps moving.
-  const key = process.env.GEMINI_API_KEY;
+  const key = process.env.GROQ_API_KEY;
   if (!key) {
     return json(MOCK_RESULT);
   }
@@ -62,23 +62,27 @@ Rules:
 - Never tell them to click links or call numbers from the message.`;
 
   try {
-    const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: SYSTEM }] },
-          contents: [{ parts: [{ text: `Message to check:\n\n${text}` }] }],
-          generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
-        }),
-      }
-    );
+    const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${key}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        temperature: 0.2,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM },
+          { role: "user", content: `Message to check:\n\n${text}` },
+        ],
+      }),
+    });
     if (!r.ok) {
-      return json({ error: `Gemini ${r.status}: ${await r.text()}` }, 502);
+      return json({ error: `Groq ${r.status}: ${await r.text()}` }, 502);
     }
     const data = await r.json();
-    const raw: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const raw: string = data?.choices?.[0]?.message?.content ?? "";
     const slice = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
     const result = JSON.parse(slice) as ScamCheckResult;
     return json(result);
