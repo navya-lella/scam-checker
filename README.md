@@ -38,7 +38,7 @@ npm install
 npm run dev     # http://localhost:3000  ← the web version
 ```
 
-With no `ANTHROPIC_API_KEY` set, `/api/check` returns the mock, so everything runs immediately.
+With no `GEMINI_API_KEY` set, `/api/check` returns the mock, so everything runs immediately.
 
 ### Load the extension
 1. Chrome → `chrome://extensions` → turn on **Developer mode** (top right)
@@ -46,16 +46,17 @@ With no `ANTHROPIC_API_KEY` set, `/api/check` returns the mock, so everything ru
 3. Highlight text on any page → click the Scam Check icon
 
 ### Turn on the real AI (Navya)
+Get a free Gemini key (no credit card) at https://aistudio.google.com/apikey
 ```bash
 cd web
-echo "ANTHROPIC_API_KEY=sk-ant-..." > .env.local
+echo "GEMINI_API_KEY=your-key-here" > .env.local
 npm run dev
 ```
 
 ### Deploy (Navya, ~2 min)
 ```bash
 npm i -g vercel
-cd web && vercel        # follow prompts; add ANTHROPIC_API_KEY in the Vercel dashboard
+cd web && vercel        # follow prompts; add GEMINI_API_KEY in the Vercel dashboard
 ```
 Then put the Vercel URL into `extension/popup.js` → `API_BASE`.
 

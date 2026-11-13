@@ -34,15 +34,23 @@ async function getSelectedText() {
 }
 
 // Sends the text to the brain and returns a ScamCheckResult.
+// 10s timeout so the popup never hangs on a dead server during a live demo.
 async function checkText(text) {
   if (USE_MOCK) return MOCK;
-  const res = await fetch(`${API_BASE}/api/check`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
-  });
-  if (!res.ok) throw new Error(`Server returned ${res.status}`);
-  return res.json();
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
+  try {
+    const res = await fetch(`${API_BASE}/api/check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    return res.json();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 // ---------- SLOT: PERSON C (UI) ----------
@@ -71,7 +79,7 @@ function renderResult(r) {
 // ---------- wiring (Person B / Navya) ----------
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const text = USE_MOCK ? "demo" : await getSelectedText();
+    const text = (USE_MOCK ? "demo" : await getSelectedText()).slice(0, 4000);
     if (!text) {
       say(`<p class="muted">Highlight the suspicious text on the page first, then click this icon again.</p>`);
       return;

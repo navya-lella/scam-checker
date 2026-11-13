@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import type { ScamCheckResult } from "@/lib/contract";
 import { MOCK_RESULT } from "@/lib/mock";
 
@@ -18,11 +17,14 @@ export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS });
 }
 
+// Free model from Google AI Studio (no credit card needed).
+// If this name ever 404s, swap it for "gemini-1.5-flash".
+const MODEL = "gemini-2.0-flash";
+
 // ============================================================
 // SLOT: PERSON A (THE BRAIN)
-// You own the SYSTEM prompt below and the parsing.
-// Everyone else gets MOCK_RESULT until a key is set, so you are
-// never blocking them. Test yourself with:
+// You own the SYSTEM prompt below. Everyone else gets MOCK_RESULT
+// until a key is set, so you are never blocking them. Test with:
 //   curl -X POST localhost:3000/api/check -H 'content-type: application/json' \
 //        -d '{"text":"Your account is locked, pay with gift cards now"}'
 // ============================================================
@@ -38,7 +40,8 @@ export async function POST(req: NextRequest) {
   }
 
   // No key yet? Hand back the mock so the rest of the team keeps moving.
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) {
     return json(MOCK_RESULT);
   }
 
@@ -59,14 +62,23 @@ Rules:
 - Never tell them to click links or call numbers from the message.`;
 
   try {
-    const anthropic = new Anthropic();
-    const msg = await anthropic.messages.create({
-      model: "claude-sonnet-5-5",
-      max_tokens: 1024,
-      system: SYSTEM,
-      messages: [{ role: "user", content: `Message to check:\n\n${text}` }],
-    });
-    const raw = msg.content.find((b) => b.type === "text")?.text ?? "";
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM }] },
+          contents: [{ parts: [{ text: `Message to check:\n\n${text}` }] }],
+          generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
+        }),
+      }
+    );
+    if (!r.ok) {
+      return json({ error: `Gemini ${r.status}: ${await r.text()}` }, 502);
+    }
+    const data = await r.json();
+    const raw: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
     const slice = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
     const result = JSON.parse(slice) as ScamCheckResult;
     return json(result);
