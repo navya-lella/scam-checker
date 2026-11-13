@@ -3,8 +3,9 @@
 // AFTER highlighting a suspicious message on any page.
 // ============================================================
 
-// Navya (integrator): after you deploy, swap this for your Vercel URL.
-const API_BASE = "http://localhost:3000";
+// Points at the live Cloudflare tunnel so teammates can use it off-laptop.
+// (Was http://localhost:3000 for local dev.)
+const API_BASE = "https://option-subjective-overseas-moderate.trycloudflare.com";
 
 // Person C: set this to true to design the UI without the backend running.
 const USE_MOCK = false;
