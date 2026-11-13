@@ -43,7 +43,11 @@ export default function Home() {
           <p><strong>What to do:</strong></p>
           <ul>{result.advice.map((a, i) => <li key={i}>{a}</li>)}</ul>
           {result.shouldAlertFamily && (
-            <a href={`mailto:?subject=Can you check this?&body=${encodeURIComponent(result.familyAlertMessage)}`}>
+            <a
+              href={`https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent("Can you check this message?")}&body=${encodeURIComponent(result.familyAlertMessage)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <button>Alert a family member</button>
             </a>
           )}

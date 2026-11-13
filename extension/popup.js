@@ -73,7 +73,11 @@ function renderResult(r) {
   if (btn)
     btn.onclick = () =>
       chrome.tabs.create({
-        url: `mailto:?subject=Can you check this?&body=${encodeURIComponent(r.familyAlertMessage)}`,
+        url:
+          "https://mail.google.com/mail/?view=cm&fs=1&su=" +
+          encodeURIComponent("Can you check this message?") +
+          "&body=" +
+          encodeURIComponent(r.familyAlertMessage),
       });
 }
 
