@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Scam Check",
+  "version": "0.1.0",
+  "description": "Highlight a suspicious message, click the icon, and find out if it's a scam.",
+  "action": { "default_popup": "popup.html", "default_title": "Scam Check" },
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://*.vercel.app/*"
+  ],
+  "icons": { "128": "icons/icon128.png" }
+}

@@ -1,0 +1,18 @@
+body {
+  width: 340px;
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  color: #1a1a1a;
+}
+#app { padding: 16px; }
+.verdict { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.safe { color: #15803d; }
+.unsure { color: #b45309; }
+.scam { color: #b91c1c; }
+ul { padding-left: 20px; margin: 6px 0; }
+button {
+  font-size: 16px; padding: 10px 16px; border: 0; border-radius: 10px;
+  background: #1a1a1a; color: #fff; cursor: pointer; margin-top: 10px;
+}
+.muted { color: #666; }

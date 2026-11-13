@@ -1,0 +1,36 @@
+:root {
+  --green: #15803d;
+  --yellow: #b45309;
+  --red: #b91c1c;
+  --ink: #1a1a1a;
+  --bg: #f7f7f5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.5;
+}
+main { max-width: 640px; margin: 0 auto; padding: 32px 20px; }
+h1 { font-size: 28px; }
+textarea {
+  width: 100%; min-height: 160px; padding: 14px; font-size: 18px;
+  border: 2px solid #ccc; border-radius: 12px; font-family: inherit;
+}
+button {
+  font-size: 20px; padding: 14px 22px; border: 0; border-radius: 12px;
+  background: var(--ink); color: #fff; cursor: pointer; margin-top: 14px;
+}
+.card { background: #fff; border-radius: 16px; padding: 20px; margin-top: 20px;
+  border-left: 10px solid #ccc; }
+.card.safe { border-color: var(--green); }
+.card.unsure { border-color: var(--yellow); }
+.card.scam { border-color: var(--red); }
+.verdict { font-size: 24px; font-weight: 700; }
+.verdict.safe { color: var(--green); }
+.verdict.unsure { color: var(--yellow); }
+.verdict.scam { color: var(--red); }
+ul { padding-left: 22px; }

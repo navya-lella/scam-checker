@@ -1,0 +1,16 @@
+# dependencies
+node_modules/
+web/node_modules/
+
+# next.js
+web/.next/
+web/out/
+
+# env / secrets  ← never commit your API key
+.env
+.env.*
+!.env.example
+
+# logs / os
+*.log
+.DS_Store
